@@ -1,4 +1,4 @@
-name: "Update 3rd-Party Lists"
+name: "Update Versions List from repology.org"
 
 on:
   schedule:
@@ -24,8 +24,8 @@ jobs:
       - name: "Run lister"
         run: |
           if [ ! -f ./main.zip ]; then
-             curl -#Lo main.zip "https://github.com/ivan-hc/AM/archive/main.zip" || exit 1
-             unzip -qq main.zip
+             wget -q "https://github.com/ivan-hc/AM/archive/main.zip" || exit 1
+             [ -f main.zip ] && unzip -qq ./main.zip || echo "AM archive not downloaded"
           fi
           if wget -q --tries=10 --timeout=20 --spider https://repology.org; then
              rm -f ./versions-list
