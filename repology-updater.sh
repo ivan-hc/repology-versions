@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -x
+
 [ ! -f ./main.zip ] && curl -#Lo main.zip "https://github.com/ivan-hc/AM/archive/main.zip" && unzip -qq main.zip
 if wget -q --tries=10 --timeout=20 --spider https://repology.org; then
 	rm -f ./versions-list
