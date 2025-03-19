@@ -23,8 +23,6 @@ jobs:
 
       - name: "Run lister"
         run: |
-          set -x
-          #chmod a+x repology-updater.sh
           ./repology-updater.sh
 
       - name: "Push to Source"
