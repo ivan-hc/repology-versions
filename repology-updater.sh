@@ -6,7 +6,8 @@ set -x
 if wget -q --tries=10 --timeout=20 --spider https://repology.org; then
 	rm -f ./versions-list
 	for arg in AM-main/programs/x86_64/*; do
-		if ! grep -q "api.github.com\|download.kde.org\|ffwa-\|android.com\|mozilla.org\|nodejs.org\|googleapis.com" "$arg" && grep -q "^wget.*http" "$arg"; then
+		#if ! grep -q "api.github.com\|download.kde.org\|ffwa-\|android.com\|mozilla.org\|nodejs.org\|googleapis.com" "$arg" && grep -q "^wget.*http" "$arg"; then
+		if grep -q "repology" "$arg"; then
 			appname=$(echo "$arg" | sed -- 's:.*/::')
 			purearg=$(echo "$appname" | sed -- 's/-electron$//g; s/-host$//g; s/-appimage$//g; s/-app$//g; s/inkscape-next$/inkscape-dev/g')
 			version=$(wget -q -O - "https://repology.org/project/$purearg/versions" | grep -i "version" | grep -i "new" | head -1 | tr '><' '\n' | grep "^[0-9]") || version=""
