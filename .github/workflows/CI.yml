@@ -25,7 +25,7 @@ jobs:
         run: |
           git clone https://github.com/ivan-hc/AM.git
           if wget -q --tries=10 --timeout=20 --spider https://repology.org; then
-             rm -f ./versions-list
+             [ -f ./versions-list ] && rm -f ./versions-list
              for arg in AM/programs/x86_64/*; do
                 if ! grep -q "api.github.com\|download.kde.org\|ffwa-" "$arg" && grep -q "^wget.*http" "$arg"; then
                    appname=$(echo "$arg" | sed -- 's:.*/::')
