@@ -8,7 +8,7 @@ if wget -q --tries=10 --timeout=20 --spider https://repology.org; then
 	for arg in AM-main/programs/x86_64/*; do
 		if grep -q "repology" "$arg"; then
 			appname=$(echo "$arg" | sed -- 's:.*/::')
-			purearg=$(echo "$appname" | sed -- 's/-electron$//g; s/-host$//g; s/-appimage$//g; s/-app$//g; s/inkscape-next$/inkscape-dev/g; s/nfctools/nfcutils/g')
+			purearg=$(echo "$appname" | sed -- 's/-electron$//g; s/-host$//g; s/-appimage$//g; s/-app$//g; s/inkscape-next$/inkscape-dev/g')
 			version=$(wget -q -O - "https://repology.org/project/$purearg/versions" | grep -i "version" | grep -i "new" | head -1 | tr '><' '\n' | grep "^[0-9]") || version=""
 			if [ -z "$version" ]; then
 				version=$(wget -q -O - "https://repology.org/project/$purearg/versions" | grep -i "version" | grep -i "uniq" | head -1 | tr '><' '\n' | grep "^[0-9]") || version=""
