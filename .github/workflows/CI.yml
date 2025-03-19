@@ -23,6 +23,7 @@ jobs:
 
       - name: "Run lister"
         run: |
+          set -x
           git clone https://github.com/ivan-hc/AM.git
           if wget -q --tries=10 --timeout=20 --spider https://repology.org; then
              [ -f ./versions-list ] && rm -f ./versions-list
