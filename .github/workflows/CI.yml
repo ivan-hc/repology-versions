@@ -23,13 +23,10 @@ jobs:
 
       - name: "Run lister"
         run: |
-          if [ ! -f ./main.zip ]; then
-             wget -q "https://github.com/ivan-hc/AM/archive/main.zip" || exit 1
-             [ -f main.zip ] && unzip -qq ./main.zip || echo "AM archive not downloaded"
-          fi
+          git clone https://github.com/ivan-hc/AM.git
           if wget -q --tries=10 --timeout=20 --spider https://repology.org; then
              rm -f ./versions-list
-             for arg in AM-main/programs/x86_64/*; do
+             for arg in AM/programs/x86_64/*; do
                 if ! grep -q "api.github.com\|download.kde.org\|ffwa-" "$arg" && grep -q "^wget.*http" "$arg"; then
                    appname=$(echo "$arg" | sed -- 's:.*/::')
                    purearg=$(echo "$appname" | sed -- 's/-electron$//g; s/-host$//g; s/-appimage$//g; s/-app$//g; s/inkscape-next$/inkscape-dev/g')
