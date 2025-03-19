@@ -23,7 +23,10 @@ jobs:
 
       - name: "Run lister"
         run: |
-          [ ! -f ./main.zip ] && curl -#Lo main.zip "https://github.com/ivan-hc/AM/archive/main.zip" && unzip -qq main.zip
+          if [ ! -f ./main.zip ]; then
+             curl -#Lo main.zip "https://github.com/ivan-hc/AM/archive/main.zip" || exit 1
+             unzip -qq main.zip
+          fi
           if wget -q --tries=10 --timeout=20 --spider https://repology.org; then
              rm -f ./versions-list
              for arg in AM-main/programs/x86_64/*; do
