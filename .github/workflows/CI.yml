@@ -31,21 +31,25 @@ jobs:
                 if ! grep -q "api.github.com\|download.kde.org\|ffwa-" "$arg" && grep -q "^wget.*http" "$arg"; then
                    appname=$(echo "$arg" | sed -- 's:.*/::')
                    purearg=$(echo "$appname" | sed -- 's/-electron$//g; s/-host$//g; s/-appimage$//g; s/-app$//g; s/inkscape-next$/inkscape-dev/g')
-                   version=$(wget -q -O - "https://repology.org/project/$purearg/versions" | grep -i "version" | grep -i "new" | head -1 | tr '><' '\n' | grep "^[0-9]")
-                   if [ -z "$version" ]; then
-                      version=$(wget -q -O - "https://repology.org/project/$purearg/versions" | grep -i "version" | grep -i "uniq" | head -1 | tr '><' '\n' | grep "^[0-9]")
-                   fi
-                   if [ -z "$version" ]; then
-                      version=$(wget -q -O - "https://repology.org/project/$purearg-client/versions" | grep -i "version" | grep -i "new" | head -1 | tr '><' '\n' | grep "^[0-9]")
-                   fi
-                   if [ -z "$version" ]; then
-                      version=$(wget -q -O - "https://repology.org/project/$purearg-client/versions" | grep -i "version" | grep -i "uniq" | head -1 | tr '><' '\n' | grep "^[0-9]")
-                   fi
-                   if [ -z "$version" ]; then
-                      version=$(wget -q -O - "https://repology.org/project/$purearg-desktop/versions" | grep -i "version" | grep -i "new" | head -1 | tr '><' '\n' | grep "^[0-9]")
-                   fi
-                   if [ -z "$version" ]; then
-                      version=$(wget -q -O - "https://repology.org/project/$purearg-desktop/versions" | grep -i "version" | grep -i "uniq" | head -1 | tr '><' '\n' | grep "^[0-9]")
+                   if wget -q --tries=10 --timeout=20 --spider "https://repology.org/project/$purearg/versions"; then
+                      version=$(wget -q -O - "https://repology.org/project/$purearg/versions" | grep -i "version" | grep -i "new" | head -1 | tr '><' '\n' | grep "^[0-9]")
+                      if [ -z "$version" ]; then
+                         version=$(wget -q -O - "https://repology.org/project/$purearg/versions" | grep -i "version" | grep -i "uniq" | head -1 | tr '><' '\n' | grep "^[0-9]")
+                      fi
+                      if [ -z "$version" ]; then
+                         version=$(wget -q -O - "https://repology.org/project/$purearg-client/versions" | grep -i "version" | grep -i "new" | head -1 | tr '><' '\n' | grep "^[0-9]")
+                      fi
+                      if [ -z "$version" ]; then
+                        version=$(wget -q -O - "https://repology.org/project/$purearg-client/versions" | grep -i "version" | grep -i "uniq" | head -1 | tr '><' '\n' | grep "^[0-9]")
+                      fi
+                      if [ -z "$version" ]; then
+                         version=$(wget -q -O - "https://repology.org/project/$purearg-desktop/versions" | grep -i "version" | grep -i "new" | head -1 | tr '><' '\n' | grep "^[0-9]")
+                      fi
+                      if [ -z "$version" ]; then
+                         version=$(wget -q -O - "https://repology.org/project/$purearg-desktop/versions" | grep -i "version" | grep -i "uniq" | head -1 | tr '><' '\n' | grep "^[0-9]")
+                      fi
+                   else
+                      version=""
                    fi
                    if [ -z "$version" ]; then
                       version="unknown"
