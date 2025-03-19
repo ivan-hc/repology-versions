@@ -1,0 +1,67 @@
+name: "Update 3rd-Party Lists"
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  sync-files:
+    name: "Run sync"
+    runs-on: ubuntu-22.04
+    steps:
+      - name: "Checkout source repository"
+        uses: actions/checkout@v4
+
+      - name: "Run lister"
+        run: |
+          [ ! -f ./main.zip ] && curl -#Lo main.zip "https://github.com/ivan-hc/AM/archive/main.zip" && unzip -qq main.zip
+          if wget -q --tries=10 --timeout=20 --spider https://repology.org; then
+             rm -f ./versions-list
+             for arg in AM-main/programs/x86_64/*; do
+                if ! grep -q "api.github.com\|download.kde.org\|ffwa-" "$arg" && grep -q "^wget.*http" "$arg"; then
+                   appname=$(echo "$arg" | sed -- 's:.*/::')
+                   purearg=$(echo "$appname" | sed -- 's/-electron$//g; s/-host$//g; s/-appimage$//g; s/-app$//g; s/inkscape-next$/inkscape-dev/g')
+                   version=$(wget -q -O - "https://repology.org/project/$purearg/versions" | grep -i "version" | grep -i "new" | head -1 | tr '><' '\n' | grep "^[0-9]")
+                   if [ -z "$version" ]; then
+                      version=$(wget -q -O - "https://repology.org/project/$purearg/versions" | grep -i "version" | grep -i "uniq" | head -1 | tr '><' '\n' | grep "^[0-9]")
+                   fi
+                   if [ -z "$version" ]; then
+                      version=$(wget -q -O - "https://repology.org/project/$purearg-client/versions" | grep -i "version" | grep -i "new" | head -1 | tr '><' '\n' | grep "^[0-9]")
+                   fi
+                   if [ -z "$version" ]; then
+                      version=$(wget -q -O - "https://repology.org/project/$purearg-client/versions" | grep -i "version" | grep -i "uniq" | head -1 | tr '><' '\n' | grep "^[0-9]")
+                   fi
+                   if [ -z "$version" ]; then
+                      version=$(wget -q -O - "https://repology.org/project/$purearg-desktop/versions" | grep -i "version" | grep -i "new" | head -1 | tr '><' '\n' | grep "^[0-9]")
+                   fi
+                   if [ -z "$version" ]; then
+                      version=$(wget -q -O - "https://repology.org/project/$purearg-desktop/versions" | grep -i "version" | grep -i "uniq" | head -1 | tr '><' '\n' | grep "^[0-9]")
+                   fi
+                   if [ -z "$version" ]; then
+                      version="unknown"
+                   fi
+                   echo "◆ $appname $version" >> ./versions-list
+                fi
+             done
+          fi
+
+      - name: "Push to Source"
+        run: |
+          git config --global user.name "ivan-hc"
+          git config --global user.email "noreply@github.com"
+          git add versions-list
+          if git diff-index --quiet HEAD; then
+            echo "No changes to commit." >> $GITHUB_STEP_SUMMARY
+          else
+            git commit -m "Sync files from source repository"
+            git push && echo "Sync to Source succeeded" >> $GITHUB_STEP_SUMMARY
+          fi
