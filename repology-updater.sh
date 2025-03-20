@@ -9,21 +9,12 @@ if wget -q --tries=10 --timeout=20 --spider https://repology.org; then
 		if grep -q "repology" "$arg"; then
 			appname=$(echo "$arg" | sed -- 's:.*/::')
 			purearg=$(echo "$appname" | sed -- 's/-electron$//g; s/-host$//g; s/-appimage$//g; s/-app$//g; s/inkscape-next$/inkscape-dev/g; s/^nfctools$/nfcutils/g')
-			version=$(wget -q -O - "https://repology.org/project/$purearg/versions" | grep -i "version" | grep -i "new" | head -1 | tr '><' '\n' | grep "^[0-9]") || version=""
+			page=$(wget -q -O - "https://repology.org/project/$purearg/versions" | grep -i "version")
+			[ -z "$page" ] && page=$(wget -q -O - "https://repology.org/project/$purearg-client/versions" | grep -i "version")
+			[ -z "$page" ] && page=$(wget -q -O - "https://repology.org/project/$purearg-desktop/versions" | grep -i "version")
+			version=$(echo "$page" | grep -i "new" | head -1 | tr '><' '\n' | grep "^[0-9]") || version=""
 			if [ -z "$version" ]; then
-				version=$(wget -q -O - "https://repology.org/project/$purearg/versions" | grep -i "version" | grep -i "uniq" | head -1 | tr '><' '\n' | grep "^[0-9]") || version=""
-			fi
-			if [ -z "$version" ]; then
-				version=$(wget -q -O - "https://repology.org/project/$purearg-client/versions" | grep -i "version" | grep -i "new" | head -1 | tr '><' '\n' | grep "^[0-9]") || version=""
-			fi
-			if [ -z "$version" ]; then
-				version=$(wget -q -O - "https://repology.org/project/$purearg-client/versions" | grep -i "version" | grep -i "uniq" | head -1 | tr '><' '\n' | grep "^[0-9]") || version=""
-			fi
-			if [ -z "$version" ]; then
-				version=$(wget -q -O - "https://repology.org/project/$purearg-desktop/versions" | grep -i "version" | grep -i "new" | head -1 | tr '><' '\n' | grep "^[0-9]") || version=""
-			fi
-			if [ -z "$version" ]; then
-				version=$(wget -q -O - "https://repology.org/project/$purearg-desktop/versions" | grep -i "version" | grep -i "uniq" | head -1 | tr '><' '\n' | grep "^[0-9]") || version=""
+				version=$(echo "$page" | grep -i "uniq" | head -1 | tr '><' '\n' | grep "^[0-9]") || version=""
 			fi
 			if [ -z "$version" ]; then
 				version="unknown"
