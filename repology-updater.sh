@@ -8,7 +8,7 @@ if wget -q --tries=10 --timeout=20 --spider https://repology.org; then
 	for arg in AM-main/programs/x86_64/*; do
 		if grep -q "repology" "$arg"; then
 			appname=$(echo "$arg" | sed -- 's:.*/::')
-			purearg=$(echo "$appname" | sed -- 's/-electron$//g; s/-host$//g; s/-appimage$//g; s/-app$//g; s/inkscape-next$/inkscape-dev/g; s/^nfctools$/nfcutils/g; s/wiznote/wiznote-desktop/g')
+			purearg=$(echo "$appname" | sed -- 's/^teamviewer-host$/teamviewer/g; s/^infra-app$/infra/g; s/^nfctools$/nfcutils/g; s/wiznote/wiznote-desktop/g')
 			page=$(wget -q -O - "https://repology.org/project/$purearg/versions" | grep -i "version")
 			[ -z "$page" ] && page=$(wget -q -O - "https://repology.org/project/$purearg-client/versions" | grep -i "version")
 			[ -z "$page" ] && page=$(wget -q -O - "https://repology.org/project/$purearg-desktop/versions" | grep -i "version")
