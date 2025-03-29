@@ -8,9 +8,9 @@ for arg in AM-main/programs/x86_64/*; do
 	if grep -q "repology" "$arg"; then
 		appname=$(echo "$arg" | sed -- 's:.*/::')
 		purearg=$(echo "$appname" | sed -- 's/^teamviewer-host$/teamviewer/g; s/^infra-app$/infra/g; s/^nfctools$/nfcutils/g; s/wiznote/wiznote-desktop/g')
-		page=$(wget -q -O - "https://repology.org/project/$purearg/versions" | grep -i "version")
-		[ -z "$page" ] && page=$(wget -q -O - "https://repology.org/project/$purearg-client/versions" | grep -i "version")
-		[ -z "$page" ] && page=$(wget -q -O - "https://repology.org/project/$purearg-desktop/versions" | grep -i "version")
+		page=$(wget -q -O - "https://api.rl.pkgforge.dev/project/$purearg/versions" | grep -i "version")
+		[ -z "$page" ] && page=$(wget -q -O - "https://api.rl.pkgforge.dev/project/$purearg-client/versions" | grep -i "version")
+		[ -z "$page" ] && page=$(wget -q -O - "https://api.rl.pkgforge.dev/project/$purearg-desktop/versions" | grep -i "version")
 		version=$(echo "$page" | grep -i "new" | head -1 | tr '><' '\n' | grep "^[0-9]") || version=""
 		if [ -z "$version" ]; then
 			version=$(echo "$page" | grep -i "uniq" | head -1 | tr '><' '\n' | grep "^[0-9]") || version=""
