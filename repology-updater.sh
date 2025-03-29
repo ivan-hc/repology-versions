@@ -3,7 +3,7 @@
 set -x
 
 [ ! -f ./main.zip ] && curl -#Lo main.zip "https://github.com/ivan-hc/AM/archive/main.zip" && unzip -qq main.zip
-if wget -q --tries=10 --timeout=20 --spider https://repology.org; then
+if curl --output /dev/null --silent --head --fail https://repology.org 1>/dev/null; then
 	rm -f ./versions-list
 	for arg in AM-main/programs/x86_64/*; do
 		if grep -q "repology" "$arg"; then
@@ -23,6 +23,6 @@ if wget -q --tries=10 --timeout=20 --spider https://repology.org; then
 		fi
 	done
 fi
-if ! wget -q --tries=10 --timeout=20 --spider https://repology.org; then
+if ! curl --output /dev/null --silent --head --fail https://repology.org 1>/dev/null; then
 	exit 1
 fi
