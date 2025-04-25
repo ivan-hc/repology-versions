@@ -8,7 +8,7 @@ if curl --output /dev/null --silent --head --fail https://api.rl.pkgforge.dev 1>
 	for arg in AM-main/programs/x86_64/*; do
 		if grep -q "repology" "$arg"; then
 			appname=$(echo "$arg" | sed -- 's:.*/::')
-			purearg=$(echo "$appname" | sed -- 's/^teamviewer-host$/teamviewer/g; s/^infra-app$/infra/g; s/^nfctools$/nfcutils/g; s/wiznote/wiznote-desktop/g')
+			purearg=$(echo "$appname" | sed -- 's/^teamviewer-host$/teamviewer/g; s/^infra-app$/infra/g; s/^lux$/lux-pv/g; s/^nfctools$/nfcutils/g; s/wiznote/wiznote-desktop/g')
 			page=$(wget -q -O - "https://api.rl.pkgforge.dev/project/$purearg/versions" | grep -i "version")
 			[ -z "$page" ] && page=$(wget -q -O - "https://api.rl.pkgforge.dev/project/$purearg-client/versions" | grep -i "version")
 			[ -z "$page" ] && page=$(wget -q -O - "https://api.rl.pkgforge.dev/project/$purearg-desktop/versions" | grep -i "version")
